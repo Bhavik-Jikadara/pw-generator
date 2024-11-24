@@ -25,7 +25,7 @@ This project is a React-based application that provides two main functionalities
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/password-word-generator.git
+   git clone https://github.com/Bhavik-Jikadara/pw-generator.git
    cd password-word-generator
    ```
 
