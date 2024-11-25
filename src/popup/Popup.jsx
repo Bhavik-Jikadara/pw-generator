@@ -9,7 +9,7 @@ export const Popup = () => {
   const [activeTab, setActiveTab] = useState('password')
 
   return (
-    <div className='w-96 p-4 bg-white'>
+    <div className='w-96 p-2 bg-white'>
       <div className='flex space-x-2 mb-4'>
         <Tabs
           onClick={() => setActiveTab('password')}
