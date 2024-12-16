@@ -139,24 +139,54 @@
   color: var(--accent-foreground);
 }
 
+
+/* Base container */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Responsive adjustments */
 @media (max-width: 640px) {
-  .header {
-    padding: 0.75rem;
+  .container {
+    padding: 0 0.75rem;
   }
-
-  .main-content {
-    padding: 1rem;
-  }
-
-  .history-item {
-    padding: 0.75rem;
+  
+  /* Stack header content on mobile */
+  header .container {
     flex-direction: column;
-    align-items: flex-start;
     gap: 0.5rem;
+    padding: 0.75rem;
   }
-
-  .copy-button {
+  
+  /* Adjust tab buttons for mobile */
+  .tab-buttons {
+    flex-direction: column;
     width: 100%;
-    text-align: center;
+  }
+  
+  /* Make history cards more compact on mobile */
+  .history-card {
+    padding: 0.75rem;
+  }
+  
+  /* Stack history card content on mobile */
+  .history-card-content {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .history-card {
+    background-color: hsl(var(--card));
+    border-color: hsl(var(--border));
+  }
+  
+  .history-card:hover {
+    background-color: hsl(var(--card-hover));
   }
 }

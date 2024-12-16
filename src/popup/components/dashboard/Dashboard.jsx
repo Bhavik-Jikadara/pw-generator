@@ -6,20 +6,65 @@ import { ScrollArea } from '../ui/scroll-area';
 import { firebaseService } from '../../../services/firebaseService';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
-import { Input } from '../ui/input';
 import {
-  Copy, Edit2, Trash2, Shield, Clock, LogOut, Loader2, RefreshCw, UserCircle
+  Copy,
+  LogOut,
+  Loader2,
+  UserCircle,
+  RefreshCw,
 } from 'lucide-react';
 import { toast } from '../ui/use-toast';
 import CryptoJS from 'crypto-js';
 
+const CategoryTab = ({ active, label, count, onClick }) => (
+  <button
+    onClick={onClick}
+    className={`text-sm font-medium ${
+      active ? 'text-primary' : 'text-muted-foreground'
+    }`}
+  >
+    {label} ({count})
+  </button>
+);
+
+const HistoryCard = ({ entry, onCopy }) => {
+  const getTypeStyles = (type) => {
+    if (type === 'password') {
+      return 'bg-red-50/50 text-red-900';
+    }
+    return 'bg-emerald-50/50 text-emerald-900';
+  };
+
+  return (
+    <Card className="p-4 border hover:shadow-sm transition-shadow">
+      <div className="space-y-2">
+        <div className="flex justify-between items-start">
+          <span className="text-sm font-medium">{entry.accountName}</span>
+          <Button
+            onClick={() => onCopy(entry.value, entry.id)}
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+          >
+            <Copy className="h-4 w-4" />
+          </Button>
+        </div>
+        <div className={`rounded-sm px-2 py-1.5 font-mono text-sm ${getTypeStyles(entry.type)}`}>
+          {entry.value}
+        </div>
+        <div className="text-xs text-muted-foreground">
+          {entry.type.charAt(0).toUpperCase() + entry.type.slice(1)}
+        </div>
+      </div>
+    </Card>
+  );
+};
+
 export const Dashboard = ({ user }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('generator');
+  const [activeFilter, setActiveFilter] = useState('all');
   const [history, setHistory] = useState([]);
-  const [editingId, setEditingId] = useState(null);
-  const [newName, setNewName] = useState('');
-  const [copyStatus, setCopyStatus] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -30,7 +75,6 @@ export const Dashboard = ({ user }) => {
     setError(null);
     try {
       const passwords = await firebaseService.getPasswords(user.uid);
-      // Decrypt passwords using the same key used for encryption
       const decryptedPasswords = passwords.map(password => {
         try {
           const encryptionKey = `${user.uid}-${process.env.REACT_APP_ENCRYPTION_KEY || 'fallback-key'}`;
@@ -49,11 +93,10 @@ export const Dashboard = ({ user }) => {
       });
       setHistory(decryptedPasswords);
     } catch (err) {
-      console.error('Error loading history:', err);
-      setError('Failed to load password history. Please try again.');
+      setError('Failed to load history');
       toast({
         title: 'Error',
-        description: 'Failed to load password history.',
+        description: 'Failed to load history',
         variant: 'destructive',
       });
     } finally {
@@ -63,199 +106,174 @@ export const Dashboard = ({ user }) => {
 
   const handleSavePassword = useCallback(async (newPassword) => {
     try {
-      // Save the password to Firebase
       await firebaseService.addPassword(user.uid, newPassword);
-      // Reload the history after saving
       await loadHistory();
       toast({
         title: 'Success',
-        description: 'Password saved successfully.',
+        description: 'Successfully saved',
       });
     } catch (err) {
-      console.error('Error saving password:', err);
       toast({
         title: 'Error',
-        description: 'Failed to save password.',
+        description: 'Failed to save',
         variant: 'destructive',
       });
     }
   }, [user, loadHistory]);
 
-  const handleCopyHistoryItem = useCallback(async (value, id) => {
+  const handleCopy = useCallback(async (value, id) => {
     try {
       await navigator.clipboard.writeText(value);
-      setCopyStatus(prev => ({ ...prev, [id]: true }));
-
       toast({
-        title: 'Success',
-        description: 'Copied to clipboard!',
+        title: 'Copied!',
+        description: 'Content copied to clipboard',
       });
-
-      setTimeout(() => {
-        setCopyStatus(prev => {
-          const newStatus = { ...prev };
-          delete newStatus[id];
-          return newStatus;
-        });
-      }, 2000);
     } catch (err) {
-      console.error('Copy error:', err);
       toast({
         title: 'Error',
-        description: 'Failed to copy.',
+        description: 'Failed to copy',
         variant: 'destructive',
       });
     }
   }, []);
 
-  const checkAuth = useCallback(async () => {
-    const currentUser = auth.currentUser;
-    if (!currentUser && !user) {
-      navigate('/');
-    }
-  }, [navigate, user]);
-
   useEffect(() => {
-    checkAuth();
-    if (user) {
+    if (!auth.currentUser && !user) {
+      navigate('/');
+    } else if (user) {
       loadHistory();
     }
-  }, [checkAuth, loadHistory, user]);
+  }, [navigate, user, loadHistory]);
 
-  const renderHistoryContent = useMemo(() => {
-    if (isLoading) {
-      return (
-        <div className="flex justify-center items-center h-full p-8">
-          <Loader2 className="w-8 h-8 animate-spin" />
-        </div>
-      );
-    }
+  const filteredHistory = useMemo(() => {
+    if (activeFilter === 'all') return history;
+    return history.filter(item => item.type === activeFilter);
+  }, [history, activeFilter]);
 
-    if (error) {
-      return (
-        <div className="flex flex-col items-center justify-center h-full p-8 space-y-4">
-          <p className="text-red-500">{error}</p>
-          <Button onClick={loadHistory} variant="outline">
-            Try Again
-          </Button>
-        </div>
-      );
-    }
-
-    if (history.length === 0) {
-      return (
-        <div className="flex flex-col items-center justify-center h-full p-8 space-y-4">
-          <Shield className="w-12 h-12 mx-auto mb-4 opacity-50" />
-          <p>No history available yet.</p>
-          <Button onClick={() => setActiveTab('generator')} variant="outline">
-            Generate Password
-          </Button>
-        </div>
-      );
-    }
-
-    return history.map(entry => {
-      // Define color classes based on type
-      const typeColorMap = {
-        password: {
-          bg: 'bg-red-100',
-          text: 'text-red-800',
-          border: 'border-red-300'
-        },
-        word: {
-          bg: 'bg-green-100',
-          text: 'text-green-800',
-          border: 'border-green-300'
-        }
-      };
-
-      const typeColors = typeColorMap[entry.type] || typeColorMap.password;
-
-      return (
-        <Card 
-          key={entry.id} 
-          className={`p-4 mb-4 shadow-sm hover:shadow-md transition-shadow border ${typeColors.border}`}
-        >
-          <div className="flex justify-between items-start">
-            <div className="space-y-2 flex-1">
-              <h3 className="font-medium">{entry.accountName}</h3>
-              <div className="flex items-center space-x-2">
-                <code
-                  className={`text-sm p-1 rounded break-all ${typeColors.bg} ${typeColors.text}`}
-                >
-                  {entry.value || 'N/A'}
-                </code>
-                <span className="text-xs capitalize">
-                  {entry.type || 'Unknown'}
-                </span>
-              </div>
-            </div>
-            <div className="flex space-x-2 ml-4">
-              <Button
-                onClick={() => handleCopyHistoryItem(entry.value, entry.id)}
-                variant="outline"
-                size="sm"
-                className={copyStatus[entry.id] ? 'text-green-500' : ''}
-              >
-                <Copy className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </Card>
-      );
-    });
-  }, [history, isLoading, error, copyStatus, handleCopyHistoryItem]);
+  const stats = useMemo(() => ({
+    all: history.length,
+    password: history.filter(item => item.type === 'password').length,
+    word: history.filter(item => item.type === 'word').length,
+  }), [history]);
 
   if (!user) return null;
 
   return (
-    <div className="w-full h-screen flex flex-col">
-      <header className="p-4 border-b">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <UserCircle className="w-5 h-5 text-gray-500" />
-            <span className="text-sm">{user?.email}</span>
+    <div className="min-h-screen bg-background flex flex-col">
+      <header className="border-b bg-background">
+        <div className="flex items-center justify-between px-4 py-3">
+          <div className="flex items-center gap-2">
+            <UserCircle className="w-5 h-5" />
+            <span className="text-sm">{user.email}</span>
           </div>
           <Button
             variant="ghost"
+            size="sm"
             onClick={async () => {
               await auth.signOut();
               navigate('/');
             }}
           >
-            <LogOut className="w-4 h-4" />
             Logout
           </Button>
         </div>
       </header>
 
-      <main className="flex-1 overflow-hidden p-4">
+      <main className="flex-1 overflow-hidden">
         {activeTab === 'generator' ? (
           <PasswordGenerator user={user} onSave={handleSavePassword} />
         ) : (
-          <ScrollArea className="h-[calc(100vh-200px)]">
-            <div className="space-y-4">{renderHistoryContent}</div>
-          </ScrollArea>
+          <div className="p-2 space-y-2">
+            <div className="flex items-center justify-between border-b pb-2">
+              <div className="flex gap-4">
+                <CategoryTab
+                  active={activeFilter === 'all'}
+                  label="All"
+                  count={stats.all}
+                  onClick={() => setActiveFilter('all')}
+                />
+                <CategoryTab
+                  active={activeFilter === 'password'}
+                  label="Passwords"
+                  count={stats.password}
+                  onClick={() => setActiveFilter('password')}
+                />
+                <CategoryTab
+                  active={activeFilter === 'word'}
+                  label="Words"
+                  count={stats.word}
+                  onClick={() => setActiveFilter('word')}
+                />
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={loadHistory}
+                disabled={isLoading}
+              >
+                <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+              </Button>
+            </div>
+
+            <ScrollArea className="h-[calc(100vh-180px)]">
+              {isLoading ? (
+                <div className="flex justify-center items-center h-40">
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                </div>
+              ) : error ? (
+                <div className="flex flex-col items-center justify-center h-40 space-y-4">
+                  <p className="text-destructive">{error}</p>
+                  <Button onClick={loadHistory} variant="outline">
+                    Try Again
+                  </Button>
+                </div>
+              ) : filteredHistory.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-40 space-y-4">
+                  <p className="text-muted-foreground">No items found</p>
+                  {activeTab === 'history' && (
+                    <Button onClick={() => setActiveTab('generator')} variant="outline">
+                      Generate New
+                    </Button>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {filteredHistory.map(entry => (
+                    <HistoryCard
+                      key={entry.id}
+                      entry={entry}
+                      onCopy={handleCopy}
+                    />
+                  ))}
+                </div>
+              )}
+            </ScrollArea>
+          </div>
         )}
       </main>
 
-      <nav className="border-t flex">
-        {[
-          { id: 'generator', icon: Shield, label: 'Generator' },
-          { id: 'history', icon: Clock, label: 'History' },
-        ].map(({ id, icon: Icon, label }) => (
+      <footer className="border-t mt-auto bg-background">
+        <div className="flex divide-x">
           <button
-            key={id}
-            onClick={() => setActiveTab(id)}
-            className={`flex-1 p-4 text-center ${
-              activeTab === id ? 'text-primary border-t-2 border-primary' : 'text-muted hover:text-foreground'
+            onClick={() => setActiveTab('generator')}
+            className={`flex items-center justify-center gap-2 flex-1 py-3 ${
+              activeTab === 'generator' ? 'text-primary' : 'text-muted-foreground'
             }`}
           >
-            <Icon className="w-5 h-5" />
-            <span>{label}</span>
+            <span className="text-lg">⚡</span>
+            <span className="text-sm font-medium">Generator</span>
           </button>
-        ))}
-      </nav>
+          <button
+            onClick={() => setActiveTab('history')}
+            className={`flex items-center justify-center gap-2 flex-1 py-3 ${
+              activeTab === 'history' ? 'text-primary' : 'text-muted-foreground'
+            }`}
+          >
+            <span className="text-lg">🕒</span>
+            <span className="text-sm font-medium">History</span>
+          </button>
+        </div>
+      </footer>
     </div>
   );
 };
