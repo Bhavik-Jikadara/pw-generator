@@ -9,7 +9,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 
 export const Popup = () => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -46,9 +46,20 @@ export const Popup = () => {
     initAuth();
   }, []);
 
+  const handleAuthStateChange = (user) => {
+    if (user) {
+      const userData = {
+        uid: user.uid,
+        email: user.email,
+      };
+      setUser(userData);
+      localStorage.setItem('pw_gen_user', JSON.stringify(userData));
+    }
+  };
+
   if (loading) {
     return (
-      <div className="w-[385px] h-[545px] flex items-center justify-center bg-background">
+      <div className="fixed inset-0 flex items-center justify-center bg-background">
         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
       </div>
     );
@@ -56,12 +67,12 @@ export const Popup = () => {
 
   if (error) {
     return (
-      <div className="w-[385px] h-[545px] flex items-center justify-center p-1 bg-background">
+      <div className="fixed inset-0 flex items-center justify-center p-4 bg-background">
         <div className="text-center text-destructive">
-          <p className="text-xs">{error}</p>
+          <p className="text-sm">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="mt-2 px-2.5 py-1 bg-primary text-primary-foreground rounded-md text-xs hover:bg-primary/90 transition-colors"
+            className="mt-2 px-3 py-1.5 bg-primary text-primary-foreground rounded-md text-sm hover:bg-primary/90 transition-colors"
           >
             Retry
           </button>
@@ -73,12 +84,12 @@ export const Popup = () => {
   return (
     <BrowserRouter>
       <TooltipProvider>
-        <div className="w-[385px] h-[545px] overflow-hidden bg-background text-foreground relative">
+        <div className="w-[385px] h-[545px] overflow-hidden bg-background">
           <div className="flex flex-col h-full">
             {user ? (
               <Dashboard user={user} />
             ) : (
-              <Auth onLogin={handleLogin} />
+              <Auth onLogin={handleAuthStateChange} />
             )}
           </div>
           <Toaster />

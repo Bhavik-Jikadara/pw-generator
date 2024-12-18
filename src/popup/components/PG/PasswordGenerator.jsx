@@ -1,15 +1,12 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useToast } from '../ui/use-toast';
-import {
-  RefreshCw, Copy, CheckCircle2, Shield, Type, Check, Info, AlertTriangle
-} from 'lucide-react';
+import { RefreshCw, Copy, CheckCircle2, Shield, Type, Check, Info } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Slider } from '../ui/slider';
 import { Switch } from '../ui/switch';
 import { Tooltip, TooltipTrigger, TooltipContent } from '../ui/tooltip';
-import { Alert, AlertDescription } from '../ui/alert';
 import { Progress } from '../ui/progress';
 import { Card, CardContent } from '../ui/card';
 import { firebaseService } from '../../../services/firebaseService';
@@ -184,49 +181,6 @@ export const PasswordGenerator = ({ user }) => {
     }
   }, [mode, generatePassword, generateWord]);
 
-  // Update WordGenerator to be settings-only component
-  const WordGenerator = () => (
-    <div className="space-y-2">
-      <div>
-        <StyledLabel tooltip="Number of words to combine">
-          Word Count: <span className="font-mono">{wordCount}</span>
-        </StyledLabel>
-        <Slider
-          value={[wordCount]}
-          onValueChange={([value]) => setWordCount(value)}
-          max={6}
-          min={2}
-          step={1}
-          className="mt-2"
-        />
-      </div>
-
-      <div className="flex justify-around space-y-1.5">
-        <StyledLabel tooltip="Character to separate words">
-          Separator
-        </StyledLabel>
-        <div className="flex gap-2 mt-2">
-          {['-', '_', '.', '#'].map((sep) => (
-            <Button
-              key={sep}
-              variant={separator === sep ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSeparator(sep)}
-              className={`h-6 px-2 text-xs ${
-                separator === sep 
-                  ? 'bg-black text-white hover:bg-black/90' 
-                  : 'hover:bg-muted'
-              }`}
-            >
-              {sep}
-            </Button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-
-
   const handleCopy = async () => {
     if (!generatedValue) return;
 
@@ -317,11 +271,10 @@ export const PasswordGenerator = ({ user }) => {
                 variant={mode === 'password' ? 'secondary' : 'ghost'}
                 size="sm"
                 onClick={() => handleModeChange('password')}
-                className={`h-6 text-xs px-2 ${
-                  mode === 'password' 
-                    ? 'bg-black text-white hover:bg-black/90' 
+                className={`h-6 text-xs px-2 ${mode === 'password'
+                    ? 'bg-black text-white hover:bg-black/90'
                     : 'hover:bg-muted-foreground/10'
-                }`}
+                  }`}
               >
                 <Shield className="w-3 h-3 mr-1" />
                 Password
@@ -330,11 +283,10 @@ export const PasswordGenerator = ({ user }) => {
                 variant={mode === 'word' ? 'secondary' : 'ghost'}
                 size="sm"
                 onClick={() => handleModeChange('word')}
-                className={`h-6 text-xs px-2 ${
-                  mode === 'word' 
-                    ? 'bg-black text-white hover:bg-black/90' 
+                className={`h-6 text-xs px-2 ${mode === 'word'
+                    ? 'bg-black text-white hover:bg-black/90'
                     : 'hover:bg-muted-foreground/10'
-                }`}
+                  }`}
               >
                 <Type className="w-3 h-3 mr-1" />
                 Word
@@ -370,11 +322,10 @@ export const PasswordGenerator = ({ user }) => {
                       variant={separator === sep ? "default" : "outline"}
                       size="sm"
                       onClick={() => setSeparator(sep)}
-                      className={`h-6 px-2 text-xs ${
-                        separator === sep 
-                          ? 'bg-black text-white hover:bg-black/90' 
+                      className={`h-6 px-2 text-xs ${separator === sep
+                          ? 'bg-black text-white hover:bg-black/90'
                           : 'hover:bg-muted'
-                      }`}
+                        }`}
                     >
                       {sep}
                     </Button>
