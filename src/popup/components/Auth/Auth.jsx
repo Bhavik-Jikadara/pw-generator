@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Card } from '../ui/card';
-import { Input } from '../ui/input';
-import { Button } from '../ui/button';
 import { auth } from '../../../firebase/config';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { firebaseService } from '../../../services/firebaseService';
@@ -97,82 +94,80 @@ export const Auth = ({ onLogin }) => {
 
   return (
     <div className="auth-container">
-      <Card className="auth-card">
-        <div className="logo-container">
-          <div className='logo-title'>
-            <img src="/logo.png" alt="Logo" />
-            <h2 className="app-title">Password Generator</h2>
-          </div>
-          <p className="subtitle">
-            {isLogin
-              ? 'Welcome back! Please login to continue'
-              : 'Create an account to get started'}
-          </p>
+      <div className="logo-container">
+        <div className='logo-title'>
+          <img src="/logo.png" alt="Logo" />
+          <h2 className="app-title">Password Generator</h2>
+        </div>
+        <p className="subtitle">
+          {isLogin
+            ? 'Welcome back! Please login to continue'
+            : 'Create an account to get started'}
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="email" className="form-label">
+            Email address
+          </label>
+          <input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="auth-input"
+            placeholder="Enter your email"
+            autoComplete="email"
+          />
         </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="email" className="form-label">
-              Email address
-            </label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="auth-input"
-              placeholder="Enter your email"
-              autoComplete="email"
-            />
+        <div className="form-group">
+          <label htmlFor="password" className="form-label">
+            Password
+          </label>
+          <input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="auth-input"
+            placeholder={isLogin ? 'Enter your password' : 'Create a password'}
+            autoComplete={isLogin ? 'current-password' : 'new-password'}
+          />
+        </div>
+
+        {error && (
+          <div className="error-message" role="alert">
+            {error}
           </div>
+        )}
 
-          <div className="form-group">
-            <label htmlFor="password" className="form-label">
-              Password
-            </label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="auth-input"
-              placeholder={isLogin ? 'Enter your password' : 'Create a password'}
-              autoComplete={isLogin ? 'current-password' : 'new-password'}
-            />
-          </div>
+        <button
+          type="submit"
+          className="auth-button"
+          disabled={loading}
+        >
+          {loading ? 'Please wait...' : (isLogin ? 'Sign In' : 'Create Account')}
+        </button>
 
-          {error && (
-            <div className="error-message" role="alert">
-              {error}
-            </div>
-          )}
-
-          <Button
-            type="submit"
-            className="auth-button"
-            disabled={loading}
+        <div className="toggle-auth">
+          <button
+            type="button"
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setError('');
+            }}
+            className="toggle-button"
           >
-            {loading ? 'Please wait...' : (isLogin ? 'Sign In' : 'Create Account')}
-          </Button>
-
-          <div className="toggle-auth">
-            <button
-              type="button"
-              onClick={() => {
-                setIsLogin(!isLogin);
-                setError('');
-              }}
-              className="toggle-button"
-            >
-              {isLogin
-                ? "Don't have an account? Sign up"
-                : 'Already have an account? Sign in'}
-            </button>
-          </div>
-        </form>
-      </Card>
+            {isLogin
+              ? "Don't have an account? Sign up"
+              : 'Already have an account? Sign in'}
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

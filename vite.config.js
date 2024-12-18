@@ -4,7 +4,6 @@ import react from '@vitejs/plugin-react'
 import manifest from './src/manifest.js'
 import path from 'path'
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
@@ -13,53 +12,55 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      'components': path.resolve(__dirname, './src/components'),
+      'lib': path.resolve(__dirname, './src/lib'),
     },
   },
   build: {
     emptyOutDir: true,
     outDir: 'build',
-    minify: mode === 'production' ? 'terser' : false,
-    terserOptions: mode === 'production' ? {
-      compress: {
-        drop_console: true,
-        drop_debugger: true
-      }
-    } : undefined,
     rollupOptions: {
       input: {
         popup: 'popup.html'
       },
       output: {
         manualChunks: (id) => {
-          if (id.includes('node_modules/react') || 
-              id.includes('node_modules/react-dom') || 
-              id.includes('node_modules/react-router')) {
-            return 'vendor'
-          }
-          if (id.includes('node_modules/firebase')) {
-            return 'firebase'
-          }
-          if (id.includes('node_modules/@radix-ui') || 
-              id.includes('node_modules/lucide-react')) {
-            return 'ui'
-          }
           if (id.includes('node_modules')) {
-            return 'utils'
+            if (id.includes('react') || id.includes('react-dom') || id.includes('scheduler')) {
+              return 'vendor-react'
+            }
+            if (id.includes('firebase')) {
+              return 'vendor-firebase'
+            }
+            if (id.includes('@radix-ui') || id.includes('lucide-react')) {
+              return 'vendor-ui'
+            }
+            return 'vendor-utils'
           }
         },
-        chunkFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash][extname]'
+        entryFileNames: 'assets/[name].js',
+        chunkFileNames: 'assets/[name].js',
+        assetFileNames: (assetInfo) => {
+          const info = assetInfo.name.split('.')
+          const extType = info[info.length - 1]
+          if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
+            return `assets/images/[name][extname]`
+          }
+          return `assets/[name][extname]`
+        }
       }
     },
-    chunkSizeWarningLimit: 1000,
-    sourcemap: mode === 'development',
-    watch: mode === 'development' ? {} : null
+    sourcemap: mode === 'development'
   },
   server: {
     port: 5173,
     strictPort: true,
     hmr: {
-      port: 5173
+      port: 5173,
+      overlay: false,
     }
-  }
+  },
+  define: {
+    'process.env': {},
+  },
 }))
