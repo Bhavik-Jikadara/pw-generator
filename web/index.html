@@ -4,93 +4,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password Word Generator - Secure Passwords Made Easy</title>
+    <title>Password Generator Extension</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="shortcut icon" href="../public/logo.png" type="image/x-icon">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/Bhavik-Jikadara/pw-generator/main/public/logo.png"
+        type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <link rel="stylesheet" href="./css/styles.css">
-    <script>
-        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-    </script>
-    <script defer src="/_vercel/insights/script.js"></script>
 </head>
 
-<body class="dark-mode">
+<body>
+    <!-- Loading Spinner -->
+    <div class="loading">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Navigation -->
     <nav class="nav">
-        <div class="container nav-container">
+        <div class="nav-container container">
             <div class="nav-logo">
-                <h1>Password Word Generator</h1>
+                <img src="https://raw.githubusercontent.com/Bhavik-Jikadara/pw-generator/main/public/logo.png"
+                    alt="Logo" class="logo-img">
+                <h2>Password Generator</h2>
             </div>
-            <button id="menu-toggle" class="menu-toggle" aria-label="Toggle menu">
-                <i id="menu-icon" class="fas fa-bars"></i>
+            <button id="menu-toggle" class="menu-toggle">
+                <i class="fas fa-bars"></i>
             </button>
             <div class="nav-links" id="nav-links">
-                <a href="#how-it-works" class="nav-link">
-                    <i class="fas fa-info-circle"></i> How It Works
-                </a>
-                <a href="#features" class="nav-link">
-                    <i class="fas fa-list-alt"></i> Features
-                </a>
-                <a href="#get-started" class="nav-link">
-                    <i class="fas fa-play-circle"></i> Get Started
-                </a>
-                <a href="#blog" class="nav-link">
-                    <i class="fas fa-blog"></i> Blog
-                </a>
-                <button id="mode-toggle" class="mode-toggle" aria-label="Toggle dark mode">
-                    <i id="mode-icon" class="fas fa-moon"></i>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#installation" class="nav-link">Installation</a>
+                <a href="#guide" class="nav-link">Guide</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
                 </button>
             </div>
         </div>
     </nav>
 
-    <main class="container">
-        <section id="download" class="download-section">
-            <div class="download-icon">
-                <i class="fas fa-download"></i>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container container">
+            <div class="hero-content">
+                <h2>Generate Strong Passwords Instantly</h2>
+                <p>Protect your accounts with secure, customizable passwords at the click of a button.</p>
+                <div class="cta-buttons">
+                    <a href="/extension/PW-Generator.zip" class="btn btn-primary" download>
+                        <i class="fas fa-download"></i>
+                        Install Now
+                    </a>
+                    <a href="#guide" class="btn btn-secondary">
+                        <i class="fas fa-book"></i>
+                        Learn More
+                    </a>
+                </div>
             </div>
-            <div class="download-content">
-                <h2>Download the Extension</h2>
-                <p>Secure your online accounts with easy password generation.</p>
-                <a href="/extension/PW-Generator.zip" id="download-btn" class="download-btn" download>
-                    <i class="fab fa-chrome"></i> Install on Chrome
-                </a>
+            <div class="hero-image">
+                <img src="./assets/home-image.png" alt="Secure password generation illustration" loading="lazy">
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section id="how-it-works" class="section">
-            <h2><i class="fas fa-cogs"></i> How It Works</h2>
-            <p>This Chrome extension generates strong, random passwords using a combination of words, numbers, and
-                symbols.</p>
-            <p>Simply click the extension icon, and it will create a password that you can copy and use.</p>
-        </section>
+    <!-- Installation Section -->
+    <section id="installation" class="installation">
+        <div class="container">
+            <h2 class="section-title">Easy Installation</h2>
+            <div class="installation-grid">
+                <div class="install-card">
+                    <div class="install-step">1</div>
+                    <h3>Download Extension</h3>
+                    <p>Choose your browser and download the extension package</p>
+                    <div class="browser-buttons">
+                        <a href="./extension/password-generator.zip" class="browser-btn chrome" download>
+                            <i class="fab fa-chrome"></i>
+                            Chrome
+                        </a>
+                        <a href="./extension/password-generator-ff.zip" class="browser-btn firefox" download>
+                            <i class="fab fa-firefox-browser"></i>
+                            Firefox
+                        </a>
+                    </div>
+                </div>
+                <div class="install-card">
+                    <div class="install-step">2</div>
+                    <h3>Access Extensions Page</h3>
+                    <p>Open your browser's extension management page</p>
+                    <div class="code-block">
+                        <code>chrome://extensions</code>
+                        <button class="copy-btn" data-text="chrome://extensions">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="install-card">
+                    <div class="install-step">3</div>
+                    <h3>Enable Developer Mode</h3>
+                    <p>Toggle on Developer Mode in the top right corner</p>
+                    <span class="instruction-icon fas fa-cog" aria-hidden="true"></span>
+                    <span class="sr-only">Enable Developer Mode</span>
+                </div>
+                <div class="install-card">
+                    <div class="install-step">4</div>
+                    <h3>Load Extension</h3>
+                    <p>Drag and drop the downloaded file into the extensions page</p>
+                    <span class="instruction-icon fas fa-arrows-alt" aria-hidden="true"></span>
+                    <span class="sr-only">Drag and Drop Extension</span>
+                </div>
+            </div>
+        </div>
+    </section>
 
-        <section id="features" class="section">
-            <h2><i class="fas fa-star"></i> Features</h2>
-            <ul class="features-list">
-                <li><i class="fas fa-check-circle"></i> Easy to use interface</li>
-                <li><i class="fas fa-check-circle"></i> Customizable password length</li>
-                <li><i class="fas fa-check-circle"></i> Option to include symbols and numbers</li>
-                <li><i class="fas fa-check-circle"></i> Secure and random generation</li>
-            </ul>
-        </section>
-    </main>
+    <!-- Guide Section -->
+    <section id="guide" class="guide">
+        <div class="container">
+            <h2 class="section-title">How to Use</h2>
+            <div class="guide-grid">
+                <div class="guide-card">
+                    <div class="guide-step">1</div>
+                    <h3>Click Extension Icon</h3>
+                    <p>Click the extension icon in your browser's toolbar to open the password generator.</p>
+                    <img src="./assets/guide-step1.png" alt="Click Extension Icon" class="guide-img">
+                </div>
+                <div class="guide-card">
+                    <div class="guide-step">2</div>
+                    <h3>Set Preferences</h3>
+                    <p>Adjust the password settings to your requirements, such as length and character types.</p>
+                    <img src="./assets/guide-step2.png" alt="Set Preferences" class="guide-img">
+                </div>
+                <div class="guide-card">
+                    <div class="guide-step">3</div>
+                    <h3>Generate & Copy</h3>
+                    <p>Click 'Generate' to create a strong password and use the copy button to save it.</p>
+                    <img src="./assets/guide-step3.png" alt="Generate & Copy" class="guide-img">
+                </div>
+            </div>
+        </div>
+    </section>
 
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">Powerful Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-adjust"></i>
+                    <h3>Customizable Options</h3>
+                    <p>Choose from various options including length, inclusion of uppercase letters, numbers, and
+                        special characters.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-sync-alt"></i>
+                    <h3>Instant Generation</h3>
+                    <p>Generate strong passwords in seconds, saving you time and effort.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-history"></i>
+                    <h3>Password History</h3>
+                    <p>Review and reuse previously generated passwords with ease, all while maintaining security.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-shield-virus"></i>
+                    <h3>Security Audits</h3>
+                    <p>Regular security audits ensure that your passwords are always protected against the latest
+                        threats.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
     <footer class="footer">
-        <div class="container footer-container">
-            <div class="social-links">
-                <a href="https://www.facebook.com/Bhavikjikadara07" aria-label="Facebook"><i
-                        class="fab fa-facebook"></i></a>
-                <a href="https://x.com/BhavikJikadara1" aria-label="Twitter"><i class="fab fa-x"></i></a>
-                <a href="https://www.linkedin.com/in/bhavikjikadara" aria-label="LinkedIn"><i
-                        class="fab fa-linkedin"></i></a>
-                <a href="https://github.com/Bhavik-Jikadara" aria-label="GitHub"><i class="fab fa-github"></i></a>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <img src="https://raw.githubusercontent.com/Bhavik-Jikadara/pw-generator/main/public/logo.png" width="50px" height="50px" alt="">
+                        <h2>PW Generator</h2>
+                    </div>
+                    <p>Secure password generation made simple for everyone.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Links</h3>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#installation">Installation</a></li>
+                        <li><a href="#guide">Guide</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Connect</h3>
+                    <div class="social-links">
+                        <a href="https://github.com/Bhavik-Jikadara" target="_blank" rel="noopener">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="https://twitter.com/BhavikJikadara1" target="_blank" rel="noopener">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="https://linkedin.com/in/bhavikjikadara" target="_blank" rel="noopener">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                    </div>
+                </div>
             </div>
-            <p>&copy; 2024 Password Word Generator. All rights reserved.</p>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Password Generator Extension. All rights reserved.</p>
+            </div>
         </div>
     </footer>
+
+    <!-- Scroll to Top Button -->
+    <button id="scroll-top" class="scroll-top" aria-label="Scroll to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
     <script src="./js/index.js"></script>
 </body>
 
